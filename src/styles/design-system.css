@@ -1,0 +1,114 @@
+/* Simple Design System */
+:root {
+  /* Colors */
+  --color-bg: #1a1a1a;
+  --color-surface: #2a2a2a;
+  --color-text: #ffffff;
+  --color-text-muted: #888888;
+  --color-accent: #6366f1;
+  
+  /* Spacing */
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+}
+
+/* Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Simple Layout */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-xl);
+}
+
+/* Header Zone */
+.header-zone {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.header-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.header-subtitle {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Core Zone */
+.core-zone {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.visual-core {
+  width: 100%;
+}
+
+.input-field {
+  background: var(--color-surface);
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: var(--space-lg);
+}
+
+.hint-text {
+  margin-top: var(--space-md);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.hint-text .example {
+  color: var(--color-text);
+}
+
+/* Footer Zone */
+.footer-zone {
+  margin-top: var(--space-xl);
+  text-align: center;
+}
+
+.footer-text {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+/* Chat Layout */
+.chat-layout {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+}
+
+.chat-messages {
+  margin-bottom: var(--space-lg);
+}
+
+.chat-input-container {
+  border-top: 1px solid #444;
+  padding-top: var(--space-lg);
+}

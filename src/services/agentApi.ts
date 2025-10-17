@@ -1,9 +1,23 @@
 import { AgentResponse } from '../types/chat';
+import { getAgentApiConfig } from '../config/vault';
 
-const AGENT_API_URL = 'http://localhost:3036/agent/query';
+let AGENT_API_URL: string | null = null;
+
+async function initializeApiConfig(): Promise<void> {
+  console.log('initializeApiConfig вызвана, AGENT_API_URL:', AGENT_API_URL);
+  if (!AGENT_API_URL) {
+    console.log('Получаем конфигурацию из Vault...');
+    const config = await getAgentApiConfig();
+    AGENT_API_URL = `http://${config.HOST}:${config.PORT}/agent/query`;
+    console.log('URL настроен:', AGENT_API_URL);
+  }
+}
 
 export async function queryAgent(message: string): Promise<AgentResponse> {
   try {
+    // Инициализируем конфигурацию если еще не сделано
+    await initializeApiConfig();
+    
     const response = await fetch(`${AGENT_API_URL}?message=${encodeURIComponent(message)}`, {
       method: 'GET',
       headers: {

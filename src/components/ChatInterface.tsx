@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Container, Title, Text, Stack, Box } from '@mantine/core';
+import { Box } from '@mantine/core';
 import { useChatStore } from '../store/chatStore';
 import { queryAgent } from '../services/agentApi';
 import { MessageList } from './MessageList';
@@ -76,38 +76,57 @@ export function ChatInterface() {
 
   if (!hasMessages) {
     return (
-      <Container size="sm" style={{ height: '100vh', display: 'flex', alignItems: 'center' }}>
-        <Stack align="center" gap="xl" style={{ width: '100%' }}>
-          <Title order={1} ta="center" c="dimmed">
-            Agent UI
-          </Title>
-          <Text size="lg" c="dimmed" ta="center">
-            Начните диалог с AI агентом
-          </Text>
-          <Box style={{ width: '100%' }}>
-            <ChatInput 
-              onSendMessage={handleSendMessage}
-              isLoading={isLoading}
-              centered
-            />
-          </Box>
-        </Stack>
-      </Container>
+      <div className="app-layout">
+        {/* Header Zone */}
+        <div className="header-zone">
+          <h1 className="header-title">
+            Lifes Agent
+          </h1>
+          <p className="header-subtitle">
+            AI-агент, поддерживающий интеграции с другими сервисами
+          </p>
+        </div>
+
+        {/* Core Zone - Main Interactive Area */}
+        <div className="core-zone">
+          <div className="visual-core">
+            <div className="input-field">
+              <ChatInput 
+                onSendMessage={handleSendMessage}
+                isLoading={isLoading}
+                centered
+              />
+            </div>
+          </div>
+          <div className="hint-text">
+            Например: <span className="example">/analyze air quality</span>
+          </div>
+        </div>
+
+        {/* Footer Zone */}
+        <div className="footer-zone">
+          <div className="footer-text">
+            © 2025 Lifes Agent
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Container size="md" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Box style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <MessageList messages={messages} />
-      </Box>
-      <Box style={{ padding: '16px 0' }}>
-        <ChatInput 
-          onSendMessage={handleSendMessage}
-          isLoading={isLoading}
-        />
-      </Box>
-    </Container>
+    <div className="app-layout">
+      <div className="chat-layout">
+        <div className="chat-messages">
+          <MessageList messages={messages} />
+        </div>
+        <div className="chat-input-container">
+          <ChatInput 
+            onSendMessage={handleSendMessage}
+            isLoading={isLoading}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
 

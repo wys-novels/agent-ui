@@ -14,7 +14,9 @@ export function ChatInput({ onSendMessage, isLoading, placeholder = "Напиш�
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('ChatInput: handleSubmit вызван, message:', message.trim(), 'isLoading:', isLoading);
     if (message.trim() && !isLoading) {
+      console.log('ChatInput: вызываем onSendMessage');
       onSendMessage(message.trim());
       setMessage('');
     }
@@ -28,51 +30,48 @@ export function ChatInput({ onSendMessage, isLoading, placeholder = "Напиш�
   };
 
   return (
-    <Paper 
-      p="md" 
-      radius="md" 
-      style={{ 
-        width: '100%', 
-        maxWidth: centered ? '600px' : '100%',
-        margin: centered ? '0 auto' : '0'
-      }}
-    >
-      <form onSubmit={handleSubmit}>
-        <Group>
-          <Textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            disabled={isLoading}
-            autosize
-            minRows={1}
-            maxRows={4}
-            style={{ flex: 1 }}
-            styles={{
-              input: {
-                border: 'none',
-                backgroundColor: 'transparent',
-                fontSize: '16px',
-                lineHeight: '1.5',
-                padding: '12px 16px',
-                resize: 'none',
+    <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+      <Group gap="md" align="flex-end" style={{ width: '100%' }}>
+        <Textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          disabled={isLoading}
+          autosize
+          minRows={1}
+          maxRows={4}
+          style={{ flex: 1 }}
+          styles={{
+            input: {
+              border: 'none',
+              backgroundColor: 'transparent',
+              color: 'var(--color-text)',
+              fontSize: '16px',
+              padding: '0',
+              resize: 'none',
+              '&:focus': {
+                outline: 'none'
               }
-            }}
-          />
-          <Button
-            type="submit"
-            disabled={!message.trim() || isLoading}
-            loading={isLoading}
-            leftSection={<IconSend size={16} />}
-            size="md"
-            radius="md"
-          >
-            Отправить
-          </Button>
-        </Group>
-      </form>
-    </Paper>
+            }
+          }}
+        />
+        <Button
+          type="submit"
+          disabled={!message.trim() || isLoading}
+          loading={isLoading}
+          size="md"
+          style={{
+            minWidth: '40px',
+            height: '40px',
+            padding: '0',
+            backgroundColor: 'var(--color-accent)'
+          }}
+        >
+          <IconSend size={16} />
+        </Button>
+      </Group>
+    </form>
   );
 }
 
