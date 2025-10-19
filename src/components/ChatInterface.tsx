@@ -1,12 +1,22 @@
 import { useState } from 'react';
 import { Box } from '@mantine/core';
 import { useChatStore } from '../store/chatStore';
-import { queryAgent } from '../services/agentApi';
+import { queryAgent, queryAgentStream } from '../services/agentApi';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
+import { StreamingStatus } from './StreamingStatus';
+import { Message } from '../types/chat';
 
 export function ChatInterface() {
-  const { messages, isLoading, addMessage, setLoading } = useChatStore();
+  const { 
+    messages, 
+    isLoading, 
+    addMessage, 
+    setLoading, 
+    updateStreamingStatus, 
+    setStreamingComplete,
+    updateMessageContent
+  } = useChatStore();
   const [error, setError] = useState<string | null>(null);
 
   const handleSendMessage = async (content: string) => {
@@ -19,52 +29,51 @@ export function ChatInterface() {
     };
     addMessage(userMessage);
 
-    // Добавляем сообщение загрузки от агента
-    const loadingMessage: Message = {
-      id: (Date.now() + 1).toString(),
+    // Добавляем сообщение агента для стриминга
+    const agentMessageId = (Date.now() + 1).toString();
+    const agentMessage: Message = {
+      id: agentMessageId,
       content: '',
       role: 'assistant',
       timestamp: Date.now() + 1,
-      isLoading: true,
+      streamingStatus: {
+        isStreaming: true,
+        currentStep: null,
+        completedSteps: []
+      }
     };
-    addMessage(loadingMessage);
+    addMessage(agentMessage);
 
     setLoading(true);
     setError(null);
 
     try {
-      const response = await queryAgent(content);
-      
-      // Удаляем сообщение загрузки
-      const updatedMessages = messages.filter(msg => msg.id !== loadingMessage.id);
-      
-      // Добавляем ответ агента
-      const agentMessage: Message = {
-        id: (Date.now() + 2).toString(),
-        content: response.finalResponse || 'Извините, не удалось получить ответ.',
-        role: 'assistant',
-        timestamp: Date.now() + 2,
-      };
-      
-      // Обновляем store с новыми сообщениями
-      useChatStore.setState({
-        messages: [...updatedMessages, userMessage, agentMessage]
+      await queryAgentStream(content, (step) => {
+        console.log('Received step:', step);
+        updateStreamingStatus(agentMessageId, step);
+        
+        // Обновляем контент сообщения при получении финального ответа
+        if (step.type === 'finalResponse' && step.status === 'completed' && step.response) {
+          console.log('Updating message content:', step.response);
+          updateMessageContent(agentMessageId, step.response);
+        }
       });
+      
+      setStreamingComplete(agentMessageId);
       
     } catch (err) {
-      // Удаляем сообщение загрузки и добавляем ошибку
-      const updatedMessages = messages.filter(msg => msg.id !== loadingMessage.id);
-      
+      // Обновляем сообщение с ошибкой
       const errorMessage: Message = {
-        id: (Date.now() + 2).toString(),
+        id: agentMessageId,
         content: 'Произошла ошибка при обращении к агенту. Попробуйте еще раз.',
         role: 'assistant',
-        timestamp: Date.now() + 2,
+        timestamp: Date.now() + 1,
       };
       
-      useChatStore.setState({
-        messages: [...updatedMessages, userMessage, errorMessage]
-      });
+      const updatedMessages = messages.map(msg => 
+        msg.id === agentMessageId ? errorMessage : msg
+      );
+      useChatStore.setState({ messages: updatedMessages });
       
       setError('Ошибка соединения с агентом');
     } finally {

@@ -4,6 +4,20 @@ export interface Message {
   role: 'user' | 'assistant';
   timestamp: number;
   isLoading?: boolean;
+  streamingStatus?: StreamingStatus;
+}
+
+export interface StreamingStatus {
+  isStreaming: boolean;
+  currentStep: StreamingStep | null;
+  completedSteps: StreamingStep[];
+}
+
+export interface StreamingStep {
+  type: 'classification' | 'apiPlan' | 'executionResults' | 'finalResponse' | 'error';
+  status: 'started' | 'completed';
+  data?: any;
+  timestamp: number;
 }
 
 export interface AgentResponse {
@@ -25,5 +39,8 @@ export interface ChatStore {
   addMessage: (message: Message) => void;
   setLoading: (loading: boolean) => void;
   clearMessages: () => void;
+  updateStreamingStatus: (messageId: string, step: StreamingStep) => void;
+  setStreamingComplete: (messageId: string) => void;
+  updateMessageContent: (messageId: string, content: string) => void;
 }
 

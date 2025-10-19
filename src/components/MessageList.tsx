@@ -1,6 +1,7 @@
-import { ScrollArea, Paper, Text, Group, Avatar, Loader } from '@mantine/core';
+import { ScrollArea, Paper, Text, Group, Avatar, Loader, Stack } from '@mantine/core';
 import { Message } from '../types/chat';
 import { MarkdownRenderer } from './MarkdownRenderer';
+import { StreamingStatus } from './StreamingStatus';
 
 interface MessageListProps {
   messages: Message[];
@@ -33,30 +34,38 @@ export function MessageList({ messages }: MessageListProps) {
               </Avatar>
             )}
             
-            <Paper
-              p="md"
-              radius="md"
-              style={{
-                maxWidth: '70%',
-                backgroundColor: message.role === 'user' 
-                  ? 'var(--mantine-color-blue-6)' 
-                  : 'var(--mantine-color-gray-1)',
-                color: message.role === 'user' 
-                  ? 'white' 
-                  : 'var(--mantine-color-gray-9)',
-              }}
-            >
-              {message.isLoading ? (
-                <Group gap="xs">
-                  <Loader size="sm" />
-                  <Text size="sm" c="dimmed">Агент печатает...</Text>
-                </Group>
-              ) : (
-                <div style={{ fontSize: '14px', lineHeight: '1.5' }}>
-                  <MarkdownRenderer content={message.content} />
-                </div>
+            <Stack spacing="xs" style={{ maxWidth: '70%', width: '100%' }}>
+              {message.role === 'assistant' && message.streamingStatus && (
+                <StreamingStatus 
+                  status={message.streamingStatus}
+                  isVisible={message.streamingStatus.isStreaming || (message.streamingStatus.completedSteps.length > 0 && message.content === '')}
+                />
               )}
-            </Paper>
+              
+              <Paper
+                p="md"
+                radius="md"
+                style={{
+                  backgroundColor: message.role === 'user' 
+                    ? 'var(--mantine-color-blue-6)' 
+                    : 'var(--mantine-color-gray-1)',
+                  color: message.role === 'user' 
+                    ? 'white' 
+                    : 'var(--mantine-color-gray-9)',
+                }}
+              >
+                {message.isLoading ? (
+                  <Group gap="xs">
+                    <Loader size="sm" />
+                    <Text size="sm" c="dimmed">Агент печатает...</Text>
+                  </Group>
+                ) : (
+                  <div style={{ fontSize: '14px', lineHeight: '1.5' }}>
+                    <MarkdownRenderer content={message.content} />
+                  </div>
+                )}
+              </Paper>
+            </Stack>
             
             {message.role === 'user' && (
               <Avatar
